@@ -27,7 +27,7 @@ func (r *newsRepository) CreateNews(news *models.News) error {
 
 func (r *newsRepository) GetNewsByID(id uint) (*models.News, error) {
 	var news models.News
-	if err := r.db.First(&news, id).Error; err != nil {
+	if err := r.db.Preload("Comments").First(&news, id).Error; err != nil {
 		return nil, err
 	}
 	return &news, nil
@@ -35,7 +35,7 @@ func (r *newsRepository) GetNewsByID(id uint) (*models.News, error) {
 
 func (r *newsRepository) GetAllNews() ([]models.News, error) {
 	var news []models.News
-	if err := r.db.Find(&news).Error; err != nil {
+	if err := r.db.Preload("Comments").Find(&news).Error; err != nil {
 		return nil, err
 	}
 	return news, nil

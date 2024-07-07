@@ -1,10 +1,19 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import "time"
 
+// Comment represents the comment entity
 type Comment struct {
-	gorm.Model
-	UserID uint   `gorm:"not null"`
-	NewsID uint   `gorm:"not null"`
-	Text   string `gorm:"not null"`
+	ID        uint       `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `sql:"index" json:"deleted_at,omitempty"`
+	UserID    uint       `json:"user_id"`
+	NewsID    uint       `json:"news_id"`
+	Text      string     `json:"text" binding:"required"`
+}
+
+type CommentInputSwagger struct {
+	NewsID uint   `json:"news_id" binding:"required"`
+	Text   string `json:"text" binding:"required"`
 }

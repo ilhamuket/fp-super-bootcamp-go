@@ -1,11 +1,20 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import "time"
 
+// News represents the news entity
 type News struct {
-	gorm.Model
-	UserID   uint   `gorm:"not null"`
-	Title    string `gorm:"not null"`
-	Content  string `gorm:"not null"`
-	Comments []Comment
+	ID        uint       `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `sql:"index" json:"deleted_at,omitempty"`
+	UserID    uint       `json:"user_id"`
+	Title     string     `json:"title" binding:"required"`
+	Content   string     `json:"content" binding:"required"`
+	Comments  []Comment  `gorm:"foreignkey:NewsID" json:"comments" preload:true`
+}
+
+type NewsInput struct {
+	Title   string `json:"title" binding:"required"`
+	Content string `json:"content" binding:"required"`
 }

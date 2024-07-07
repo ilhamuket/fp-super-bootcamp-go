@@ -23,18 +23,23 @@ func NewNewsController(newsService services.NewsService) *NewsController {
 // @Tags news
 // @Accept  json
 // @Produce  json
-// @Param news body models.News true "News"
+// @Param news body models.NewsInput true "News Input"
 // @Success 201 {object} models.News
+// @Security BearerAuth
 // @Router /news [post]
 func (ctrl *NewsController) CreateNews(c *gin.Context) {
-	var news models.News
-	if err := c.ShouldBindJSON(&news); err != nil {
+	var newsInput models.NewsInput
+	if err := c.ShouldBindJSON(&newsInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	userID, _ := c.Get("user_id")
-	news.UserID = userID.(uint)
+	news := models.News{
+		UserID:  userID.(uint),
+		Title:   newsInput.Title,
+		Content: newsInput.Content,
+	}
 
 	if err := ctrl.newsService.CreateNews(&news); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -51,11 +56,12 @@ func (ctrl *NewsController) CreateNews(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path int true "News ID"
-// @Param news body models.News true "News"
+// @Param news body models.NewsInput true "News Input"
 // @Success 200 {object} models.News
+// @Security BearerAuth
 // @Router /news/{id} [put]
 func (ctrl *NewsController) UpdateNews(c *gin.Context) {
-	var news models.News
+	var newsInput models.NewsInput
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid news ID"})
@@ -68,19 +74,20 @@ func (ctrl *NewsController) UpdateNews(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&news); err != nil {
+	if err := c.ShouldBindJSON(&newsInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	news.ID = existingNews.ID
+	existingNews.Title = newsInput.Title
+	existingNews.Content = newsInput.Content
 
-	if err := ctrl.newsService.UpdateNews(&news); err != nil {
+	if err := ctrl.newsService.UpdateNews(existingNews); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, news)
+	c.JSON(http.StatusOK, existingNews)
 }
 
 // DeleteNews godoc
@@ -89,6 +96,7 @@ func (ctrl *NewsController) UpdateNews(c *gin.Context) {
 // @Tags news
 // @Param id path int true "News ID"
 // @Success 204
+// @Security BearerAuth
 // @Router /news/{id} [delete]
 func (ctrl *NewsController) DeleteNews(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))

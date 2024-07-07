@@ -1,0 +1,538 @@
+basePath: /
+definitions:
+  models.ChangePasswordInput:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  models.Comment:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      news_id:
+        type: integer
+      text:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - text
+    type: object
+  models.CommentInputSwagger:
+    properties:
+      news_id:
+        type: integer
+      text:
+        type: string
+    required:
+    - news_id
+    - text
+    type: object
+  models.LoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  models.News:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - content
+    - title
+    type: object
+  models.NewsInput:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  models.Profile:
+    properties:
+      bio:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      picture:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.ProfileInput:
+    properties:
+      bio:
+        type: string
+      picture:
+        type: string
+    required:
+    - bio
+    - picture
+    type: object
+  models.RegisterInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - role
+    - username
+    type: object
+  models.Role:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    required:
+    - name
+    type: object
+  models.User:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      news:
+        items:
+          $ref: '#/definitions/models.News'
+        type: array
+      password:
+        type: string
+      profile:
+        $ref: '#/definitions/models.Profile'
+      roles:
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server for a news application.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: News API
+  version: "1.0"
+paths:
+  /change-password:
+    put:
+      consumes:
+      - application/json
+      description: Change the password of the logged-in user
+      parameters:
+      - description: Change Password Input
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated successfully
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Change the password of the logged-in user
+      tags:
+      - user
+  /comments:
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for a news item
+      parameters:
+      - description: Comment
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.CommentInputSwagger'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Create a new comment
+      tags:
+      - comment
+  /comments/{id}:
+    delete:
+      description: Delete a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Delete a comment
+      tags:
+      - comment
+    get:
+      description: Get a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Get a comment by ID
+      tags:
+      - comment
+    put:
+      consumes:
+      - application/json
+      description: Update a comment by ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Comment
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.CommentInputSwagger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comment'
+      security:
+      - BearerAuth: []
+      summary: Update a comment
+      tags:
+      - comment
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: Login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+      summary: Login a user
+      tags:
+      - auth
+  /news:
+    get:
+      description: Get all news items
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.News'
+            type: array
+      summary: Get all news items
+      tags:
+      - news
+    post:
+      consumes:
+      - application/json
+      description: Create a new news item
+      parameters:
+      - description: News Input
+        in: body
+        name: news
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewsInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.News'
+      security:
+      - BearerAuth: []
+      summary: Create a new news
+      tags:
+      - news
+  /news/{id}:
+    delete:
+      description: Delete a news item
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Delete a news item
+      tags:
+      - news
+    get:
+      description: Get a single news item by ID
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.News'
+      summary: Get a single news item by ID
+      tags:
+      - news
+    put:
+      consumes:
+      - application/json
+      description: Update an existing news item
+      parameters:
+      - description: News ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: News Input
+        in: body
+        name: news
+        required: true
+        schema:
+          $ref: '#/definitions/models.NewsInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.News'
+      security:
+      - BearerAuth: []
+      summary: Update an existing news
+      tags:
+      - news
+  /news/comments/{news_id}:
+    get:
+      description: Get comments for a specific news item
+      parameters:
+      - description: News ID
+        in: path
+        name: news_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get comments by news ID
+      tags:
+      - comment
+  /profile:
+    get:
+      description: Get the profile of the logged-in user
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Profile'
+      security:
+      - BearerAuth: []
+      summary: Get the profile of the logged-in user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update the profile of the logged-in user
+      parameters:
+      - description: Profile Input
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Profile'
+      security:
+      - BearerAuth: []
+      summary: Update the profile of the logged-in user
+      tags:
+      - user
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register a new user
+      tags:
+      - auth
+  /users:
+    get:
+      description: Get all users
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get all users
+      tags:
+      - user
+  /users/{id}:
+    get:
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - BearerAuth: []
+      summary: Get a user by ID
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

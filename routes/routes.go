@@ -8,21 +8,22 @@ import (
 	"final-project-golang-individu/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"time"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Middleware CORS
-	corsConfig := cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"}
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	corsConfig.AllowHeaders = []string{"Content-Type", "Authorization"}
+	corsConfig.ExposeHeaders = []string{"Content-Length"}
+	corsConfig.AllowCredentials = true
+	corsConfig.MaxAge = 12 * time.Hour
+
 	r.Use(cors.New(corsConfig))
 
 	// Repositories
@@ -46,6 +47,8 @@ func SetupRouter() *gin.Engine {
 	// Routes
 	r.POST("/register", authController.Register)
 	r.POST("/login", authController.Login)
+	r.GET("/news/:id", newsController.GetNews)
+	r.GET("/news", newsController.GetAllNews)
 
 	// JWT Protected routes
 	auth := r.Group("/")
@@ -61,16 +64,18 @@ func SetupRouter() *gin.Engine {
 		auth.POST("/news", middlewares.AuthorizeRole("admin", "editor"), newsController.CreateNews)
 		auth.PUT("/news/:id", middlewares.AuthorizeRole("admin", "editor"), newsController.UpdateNews)
 		auth.DELETE("/news/:id", middlewares.AuthorizeRole("admin"), newsController.DeleteNews)
-		auth.GET("/news/:id", newsController.GetNews)
-		auth.GET("/news", newsController.GetAllNews)
 
 		// Comment routes
 		auth.POST("/comments", commentController.CreateComment)
 		auth.GET("/comments/:id", commentController.GetComment)
-		auth.GET("/news/:id/comments", commentController.GetCommentsByNews) // Changed from :news_id to :id
+		auth.GET("/news/comments/:news_id", commentController.GetCommentsByNews)
 		auth.PUT("/comments/:id", commentController.UpdateComment)
 		auth.DELETE("/comments/:id", commentController.DeleteComment)
+
 	}
+
+	// Swagger endpoint
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
 }

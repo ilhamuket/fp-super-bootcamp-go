@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"net/http"
+
+	"final-project-golang-individu/models"
 	"final-project-golang-individu/services"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AuthController struct {
@@ -20,16 +22,11 @@ func NewAuthController(authService services.AuthService) *AuthController {
 // @Tags auth
 // @Accept  json
 // @Produce  json
-// @Param user body struct{Username string; Password string; Email string; Role string} true "User"
+// @Param user body models.RegisterInput true "User"
 // @Success 201 {object} models.User
 // @Router /register [post]
 func (ctrl *AuthController) Register(c *gin.Context) {
-	var input struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
-		Email    string `json:"email" binding:"required"`
-		Role     string `json:"role" binding:"required"`
-	}
+	var input models.RegisterInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -50,14 +47,11 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 // @Tags auth
 // @Accept  json
 // @Produce  json
-// @Param login body struct{Username string; Password string} true "Login"
+// @Param login body models.LoginInput true "Login"
 // @Success 200 {string} string "token"
 // @Router /login [post]
 func (ctrl *AuthController) Login(c *gin.Context) {
-	var input struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
-	}
+	var input models.LoginInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

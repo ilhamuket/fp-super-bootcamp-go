@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"final-project-golang-individu/models"
 	"final-project-golang-individu/services"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -22,6 +23,7 @@ func NewUserController(userService services.UserService) *UserController {
 // @Description Get the profile of the logged-in user
 // @Tags user
 // @Success 200 {object} models.Profile
+// @Security BearerAuth
 // @Router /profile [get]
 func (ctrl *UserController) GetProfile(c *gin.Context) {
 	userID, _ := c.Get("user_id")
@@ -41,11 +43,18 @@ func (ctrl *UserController) GetProfile(c *gin.Context) {
 // @Tags user
 // @Accept  json
 // @Produce  json
-// @Param profile body models.Profile true "Profile"
+// @Param profile body models.ProfileInput true "Profile Input"
 // @Success 200 {object} models.Profile
+// @Security BearerAuth
 // @Router /profile [put]
 func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 	userID, _ := c.Get("user_id")
+
+	var profileInput models.ProfileInput
+	if err := c.ShouldBindJSON(&profileInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	user, err := ctrl.userService.GetUserByID(userID.(uint))
 	if err != nil {
@@ -53,10 +62,8 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&user.Profile); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	user.Profile.Bio = profileInput.Bio
+	user.Profile.Picture = profileInput.Picture
 
 	if err := ctrl.userService.UpdateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -72,15 +79,14 @@ func (ctrl *UserController) UpdateProfile(c *gin.Context) {
 // @Tags user
 // @Accept  json
 // @Produce  json
-// @Param password body string true "New Password"
+// @Param password body models.ChangePasswordInput true "Change Password Input"
 // @Success 200 {string} string "Password updated successfully"
+// @Security BearerAuth
 // @Router /change-password [put]
 func (ctrl *UserController) ChangePassword(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 
-	var input struct {
-		Password string `json:"password" binding:"required"`
-	}
+	var input models.ChangePasswordInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -112,6 +118,7 @@ func (ctrl *UserController) ChangePassword(c *gin.Context) {
 // @Description Get all users
 // @Tags user
 // @Success 200 {array} models.User
+// @Security BearerAuth
 // @Router /users [get]
 func (ctrl *UserController) GetAllUsers(c *gin.Context) {
 	users, err := ctrl.userService.GetAllUsers()
@@ -129,6 +136,7 @@ func (ctrl *UserController) GetAllUsers(c *gin.Context) {
 // @Tags user
 // @Param id path int true "User ID"
 // @Success 200 {object} models.User
+// @Security BearerAuth
 // @Router /users/{id} [get]
 func (ctrl *UserController) GetUserByID(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
