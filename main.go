@@ -6,8 +6,6 @@ import (
 	"final-project-golang-individu/routes"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 // @title News API
@@ -28,17 +26,11 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	// Load environment variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	// Set up Swagger documentation
 	docs.SwaggerInfo.Title = "News API"
 	docs.SwaggerInfo.Description = "This is a sample server for a news application."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = os.Getenv("HOST")
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	// Initialize database
