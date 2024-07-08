@@ -13,9 +13,13 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
+	var err error
+
 	// Load .env file in local development
-	if err := godotenv.Load(".env"); err != nil {
-		log.Printf("Error loading .env file: %v", err)
+	if os.Getenv("ENVIRONMENT") != "production" {
+		if err := godotenv.Load(".env"); err != nil {
+			log.Printf("Error loading .env file: %v", err)
+		}
 	}
 
 	// Read environment variables
@@ -26,9 +30,8 @@ func InitDB() {
 	dbPort := os.Getenv("DB_PORT")
 
 	// Connect to the database with appropriate sslmode setting
-	var err error
 	if os.Getenv("ENVIRONMENT") == "production" {
-		// Use sslmode=require in production
+		// Use sslmode=require in production (Heroku)
 		DB, err = gorm.Open("postgres", "host="+dbHost+" port="+dbPort+" user="+dbUsername+" dbname="+dbName+" password="+dbPassword+" sslmode=require")
 	} else {
 		// Use default sslmode (disable in local development)
