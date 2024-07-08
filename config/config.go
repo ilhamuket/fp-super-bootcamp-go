@@ -7,11 +7,17 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // import PostgreSQL driver
+	"github.com/joho/godotenv"
 )
 
 var DB *gorm.DB
 
 func InitDB() {
+	// Load .env file in local development
+	if err := godotenv.Load(".env"); err != nil {
+		log.Printf("Error loading .env file: %v", err)
+	}
+
 	// Read environment variables
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
@@ -19,9 +25,15 @@ func InitDB() {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 
-	// Connect to the database
+	// Connect to the database with appropriate sslmode setting
 	var err error
-	DB, err = gorm.Open("postgres", "host="+dbHost+" port="+dbPort+" user="+dbUsername+" dbname="+dbName+" password="+dbPassword+" sslmode=require")
+	if os.Getenv("ENVIRONMENT") == "production" {
+		// Use sslmode=require in production
+		DB, err = gorm.Open("postgres", "host="+dbHost+" port="+dbPort+" user="+dbUsername+" dbname="+dbName+" password="+dbPassword+" sslmode=require")
+	} else {
+		// Use default sslmode (disable in local development)
+		DB, err = gorm.Open("postgres", "host="+dbHost+" port="+dbPort+" user="+dbUsername+" dbname="+dbName+" password="+dbPassword+" sslmode=disable")
+	}
 	if err != nil {
 		log.Fatal("Failed to connect database", err)
 	}

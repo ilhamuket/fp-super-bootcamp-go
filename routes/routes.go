@@ -44,6 +44,14 @@ func SetupRouter() *gin.Engine {
 	newsController := controllers.NewNewsController(newsService)
 	commentController := controllers.NewCommentController(commentService)
 
+	// Serve static files
+	r.Static("/public", "./public")
+
+	// Root route to serve HTML
+	r.GET("/", func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
+
 	// Routes
 	r.POST("/register", authController.Register)
 	r.POST("/login", authController.Login)

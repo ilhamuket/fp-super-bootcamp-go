@@ -853,7 +853,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "News API",
-	Description:      "This is a sample server for a news application.",
+	Description:      "This is rest api go \"news\" by muhammad ilham",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

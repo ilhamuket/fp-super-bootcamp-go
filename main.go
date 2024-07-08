@@ -10,7 +10,7 @@ import (
 
 // @title News API
 // @version 1.0
-// @description This is a sample server for a news application.
+// @description This is rest api go "news" by muhammad ilham
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -27,8 +27,8 @@ import (
 // @name Authorization
 func main() {
 	// Set up Swagger documentation
-	docs.SwaggerInfo.Title = "News API"
-	docs.SwaggerInfo.Description = "This is a sample server for a news application."
+	docs.SwaggerInfo.Title = "News API Go"
+	docs.SwaggerInfo.Description = "This is rest api go \"news\" by muhammad ilham."
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = os.Getenv("HOST")
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
