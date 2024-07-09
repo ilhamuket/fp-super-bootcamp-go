@@ -2,6 +2,10 @@
 
 ![Logo Golang](https://go.dev/blog/go-brand/Go-Logo/PNG/Go-Logo_Blue.png)
 
+## URL Live
+
+Anda dapat mengakses proyek ini secara live di [https://news-golang-api-670f44c77a36.herokuapp.com/](https://news-golang-api-670f44c77a36.herokuapp.com/).
+
 ## Pengenalan
 
 Assalamualaikum, nama saya Muhammad Ilham, peserta kelas Fullstack Sanber Super Bootcamp Jabar 2024 dengan fokus pada Golang dan Next.js. Saya senang memperkenalkan proyek REST API "news" yang telah saya buat menggunakan Golang. Proyek ini memungkinkan Anda untuk mengelola berita melalui API dengan fitur-fitur terstruktur.
