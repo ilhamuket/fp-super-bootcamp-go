@@ -14,7 +14,7 @@ type User struct {
 	Password  string     `gorm:"not null" json:"password"`
 	Email     string     `gorm:"unique;not null" json:"email"`
 	Roles     []Role     `gorm:"many2many:user_roles" json:"roles"`
-	Profile   Profile    `json:"profile"`
+	Profile   Profile    `json:"profile" gorm:"foreignkey:UserID"`
 	News      []News     `json:"news"`
 	Comments  []Comment  `json:"comments"`
 }
@@ -39,4 +39,10 @@ type ProfileInput struct {
 
 type ChangePasswordInput struct {
 	Password string `json:"password" binding:"required"`
+}
+
+type EditUserInput struct {
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Role     string `json:"role" binding:"required"`
 }

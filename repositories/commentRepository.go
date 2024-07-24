@@ -27,7 +27,7 @@ func (r *commentRepository) CreateComment(comment *models.Comment) error {
 
 func (r *commentRepository) GetCommentByID(id uint) (*models.Comment, error) {
 	var comment models.Comment
-	if err := r.db.First(&comment, id).Error; err != nil {
+	if err := r.db.Preload("User").First(&comment, id).Error; err != nil {
 		return nil, err
 	}
 	return &comment, nil
@@ -35,7 +35,7 @@ func (r *commentRepository) GetCommentByID(id uint) (*models.Comment, error) {
 
 func (r *commentRepository) GetCommentsByNewsID(newsID uint) ([]models.Comment, error) {
 	var comments []models.Comment
-	if err := r.db.Where("news_id = ?", newsID).Find(&comments).Error; err != nil {
+	if err := r.db.Preload("User").Where("news_id = ?", newsID).Find(&comments).Error; err != nil {
 		return nil, err
 	}
 	return comments, nil

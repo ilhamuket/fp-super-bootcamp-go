@@ -40,7 +40,7 @@ func SetupRouter() *gin.Engine {
 
 	// Controllers
 	authController := controllers.NewAuthController(authService)
-	userController := controllers.NewUserController(userService)
+	userController := controllers.NewUserController(userService, roleRepository)
 	newsController := controllers.NewNewsController(newsService)
 	commentController := controllers.NewCommentController(commentService)
 
@@ -57,6 +57,8 @@ func SetupRouter() *gin.Engine {
 	r.POST("/login", authController.Login)
 	r.GET("/news/:id", newsController.GetNews)
 	r.GET("/news", newsController.GetAllNews)
+	r.GET("/comments/:id", commentController.GetComment)
+	r.GET("/news/comments/:news_id", commentController.GetCommentsByNews)
 
 	// JWT Protected routes
 	auth := r.Group("/")
@@ -67,6 +69,9 @@ func SetupRouter() *gin.Engine {
 		auth.PUT("/profile", userController.UpdateProfile)
 		auth.GET("/users", middlewares.AuthorizeRole("admin"), userController.GetAllUsers)
 		auth.GET("/users/:id", middlewares.AuthorizeRole("admin"), userController.GetUserByID)
+		auth.POST("/users", middlewares.AuthorizeRole("admin"), userController.CreateUser)
+		auth.PUT("/users/:id", middlewares.AuthorizeRole("admin"), userController.UpdateUser)
+		auth.DELETE("/users/:id", middlewares.AuthorizeRole("admin"), userController.DeleteUser)
 
 		// News routes
 		auth.POST("/news", middlewares.AuthorizeRole("admin", "editor"), newsController.CreateNews)
@@ -75,8 +80,6 @@ func SetupRouter() *gin.Engine {
 
 		// Comment routes
 		auth.POST("/comments", commentController.CreateComment)
-		auth.GET("/comments/:id", commentController.GetComment)
-		auth.GET("/news/comments/:news_id", commentController.GetCommentsByNews)
 		auth.PUT("/comments/:id", commentController.UpdateComment)
 		auth.DELETE("/comments/:id", commentController.DeleteComment)
 

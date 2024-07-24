@@ -21,6 +21,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      user:
+        $ref: '#/definitions/models.User'
       user_id:
         type: integer
     required:
@@ -35,6 +37,19 @@ definitions:
     required:
     - news_id
     - text
+    type: object
+  models.EditUserInput:
+    properties:
+      email:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - role
+    - username
     type: object
   models.LoginInput:
     properties:
@@ -445,7 +460,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Profile'
+            $ref: '#/definitions/models.User'
       security:
       - BearerAuth: []
       summary: Get the profile of the logged-in user
@@ -511,7 +526,46 @@ paths:
       summary: Get all users
       tags:
       - user
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User Input
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - BearerAuth: []
+      summary: Create a new user
+      tags:
+      - user
   /users/{id}:
+    delete:
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Delete a user by ID
+      tags:
+      - user
     get:
       description: Get a user by ID
       parameters:
@@ -528,6 +582,34 @@ paths:
       security:
       - BearerAuth: []
       summary: Get a user by ID
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update the username, email, and role of a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Edit User Input
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.EditUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - BearerAuth: []
+      summary: Update user details
       tags:
       - user
 securityDefinitions:

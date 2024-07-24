@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// UserRepository interface
 type UserRepository interface {
 	CreateUser(user *models.User) error
 	GetUserByID(id uint) (*models.User, error)
@@ -12,6 +13,9 @@ type UserRepository interface {
 	GetAllUsers() ([]models.User, error)
 	UpdateUser(user *models.User) error
 	DeleteUser(id uint) error
+	AssignRoleToUser(userRole *models.UserRole) error
+	GetUserWithRoles(userID uint, user *models.User) error
+	RemoveRolesFromUser(userID uint) error
 }
 
 type userRepository struct {
@@ -56,4 +60,16 @@ func (r *userRepository) UpdateUser(user *models.User) error {
 
 func (r *userRepository) DeleteUser(id uint) error {
 	return r.db.Delete(&models.User{}, id).Error
+}
+
+func (r *userRepository) AssignRoleToUser(userRole *models.UserRole) error {
+	return r.db.Create(userRole).Error
+}
+
+func (r *userRepository) GetUserWithRoles(userID uint, user *models.User) error {
+	return r.db.Preload("Roles").First(user, userID).Error
+}
+
+func (r *userRepository) RemoveRolesFromUser(userID uint) error {
+	return r.db.Where("user_id = ?", userID).Delete(&models.UserRole{}).Error
 }

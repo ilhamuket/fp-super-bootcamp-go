@@ -14,29 +14,29 @@ type CommentService interface {
 }
 
 type commentService struct {
-	repository repositories.CommentRepository
+	commentRepo repositories.CommentRepository
 }
 
-func NewCommentService(repository repositories.CommentRepository) CommentService {
-	return &commentService{repository: repository}
+func NewCommentService(commentRepo repositories.CommentRepository) CommentService {
+	return &commentService{commentRepo: commentRepo}
 }
 
 func (s *commentService) CreateComment(comment *models.Comment) error {
-	return s.repository.CreateComment(comment)
+	return s.commentRepo.CreateComment(comment)
 }
 
 func (s *commentService) GetCommentByID(id uint) (*models.Comment, error) {
-	return s.repository.GetCommentByID(id)
+	return s.commentRepo.GetCommentByID(id)
 }
 
 func (s *commentService) GetCommentsByNewsID(newsID uint) ([]models.Comment, error) {
-	return s.repository.GetCommentsByNewsID(newsID)
+	return s.commentRepo.GetCommentsByNewsID(newsID)
 }
 
 func (s *commentService) UpdateComment(comment *models.Comment) error {
-	return s.repository.UpdateComment(comment)
+	return s.commentRepo.UpdateComment(comment)
 }
 
 func (s *commentService) DeleteComment(id uint) error {
-	return s.repository.DeleteComment(id)
+	return s.commentRepo.DeleteComment(id)
 }

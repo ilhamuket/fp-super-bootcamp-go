@@ -46,7 +46,14 @@ func (ctrl *CommentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, comment)
+	// Load user information for the created comment
+	createdComment, err := ctrl.commentService.GetCommentByID(comment.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, createdComment)
 }
 
 // UpdateComment godoc
@@ -94,7 +101,14 @@ func (ctrl *CommentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, existingComment)
+	// Load user information for the updated comment
+	updatedComment, err := ctrl.commentService.GetCommentByID(existingComment.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedComment)
 }
 
 // DeleteComment godoc
